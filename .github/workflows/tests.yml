@@ -1,0 +1,35 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests in every module
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          set -e
+          for dir in module-*/; do
+            if ls "$dir"test_*.py >/dev/null 2>&1; then
+              echo "::group::pytest $dir"
+              (cd "$dir" && python -m pytest -q)
+              echo "::endgroup::"
+            fi
+          done

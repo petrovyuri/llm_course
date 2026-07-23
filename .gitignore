@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Виртуальные окружения
+.venv/
+venv/
+env/
+
+# Сохранённые веса моделей и конфиги обучения (генерируются train.py)
+*.pth
+*.pt
+model_config.json
+
+# Служебные файлы ОС и редакторов
+.DS_Store
+.idea/
+.vscode/
