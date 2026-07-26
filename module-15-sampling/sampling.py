@@ -1,3 +1,4 @@
+# sampling.py
 import torch
 
 
@@ -10,11 +11,14 @@ def filter_top_k(logits, k):
 
     Args:
         logits: [batch_size, vocab_size]
-        k: сколько кандидатов оставить
+        k: сколько кандидатов оставить (не больше размера словаря)
 
     Returns:
         logits той же формы, где всё, кроме топ-k, равно -inf
     """
+    # Просить кандидатов больше, чем есть слов в словаре, бессмысленно
+    k = min(k, logits.size(-1))
+
     top_values, _ = torch.topk(logits, k)
 
     # Порог - самый маленький логит из топ-k
@@ -44,9 +48,12 @@ def filter_top_p(logits, p):
     cumulative = torch.cumsum(sorted_probs, dim=-1)
 
     # 3. Токен выбывает, если сумма ДО него уже достигла p.
-    #    Токен, на котором порог пересекли, остаётся в ядре -
-    #    поэтому при любом p > 0 хотя бы один токен выживает.
+    #    Токен, на котором порог пересекли, остаётся в ядре.
     remove = (cumulative - sorted_probs) >= p
+
+    # Самый вероятный токен не выбрасываем никогда: ядро не бывает пустым
+    remove[..., 0] = False
+
     sorted_logits = sorted_logits.masked_fill(remove, float("-inf"))
 
     # 4. Возвращаем логиты на их исходные места в словаре
@@ -65,7 +72,8 @@ def sample_next_token(last_logits, do_sample=False, temperature=1.0,
         last_logits: [batch_size, vocab_size] - логиты последнего токена
         do_sample: False - жадный выбор (argmax, как в модуле 14),
                    True - случайный выбор по вероятностям
-        temperature: температура softmax (используется при do_sample=True)
+        temperature: температура softmax, строго больше нуля
+                     (используется при do_sample=True)
         top_k: если задано - оставить только k самых вероятных токенов
         top_p: если задано - оставить ядро с суммарной вероятностью >= p
 

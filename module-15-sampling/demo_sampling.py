@@ -10,6 +10,7 @@ import sys
 import torch
 
 from generate import model, tokenizer, generate
+from sampling import filter_top_p
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -42,4 +43,14 @@ run("T=2.0", do_sample=True, temperature=2.0)
 
 print("\n=== 4. Отсекаем хвост: top-k и top-p ===")
 run("T=2.0 + top-k=5", do_sample=True, temperature=2.0, top_k=5)
+run("T=2.0 + top-p=0.9", do_sample=True, temperature=2.0, top_p=0.9)
 run("T=1.0 + top-p=0.9, seed=2", seed=2, do_sample=True, temperature=1.0, top_p=0.9)
+
+print("\n=== 5. Почему top-p не спас при T=2.0: размер ядра ===")
+input_ids = torch.tensor([tokenizer.encode(PROMPT)])
+with torch.no_grad():
+    last_logits = model(input_ids)[:, -1, :]
+
+for T in (0.5, 1.0, 2.0):
+    core = torch.isfinite(filter_top_p(last_logits / T, 0.9)).sum().item()
+    print(f"  T={T}: ядро top-p=0.9 -> {core} токенов из {last_logits.size(-1)}")

@@ -33,7 +33,7 @@ def test_low_temperature_is_greedy():
 
 
 def test_top_k_keeps_k_tokens():
-    """После top-k=2 остаются ровно 2 конечных логита - два максимума."""
+    """На наших логитах (совпадений нет) top-k=2 оставляет ровно 2 максимума."""
     filtered = filter_top_k(LOGITS, k=2)
     finite = torch.isfinite(filtered[0])
     assert finite.sum().item() == 2, f"ожидали 2 токена, осталось {finite.sum().item()}"
@@ -53,6 +53,9 @@ def test_top_p_nucleus():
     probs = torch.softmax(LOGITS, dim=-1)
     mass = probs[0][finite].sum().item()
     assert mass >= 0.7, f"масса ядра {mass:.3f} < 0.7"
+    # Даже при крошечном p ядро не пустеет: лидер остаётся всегда
+    tiny = torch.isfinite(filter_top_p(LOGITS, p=0.0)[0])
+    assert tiny.sum().item() == 1 and tiny[2], "при p=0 должен выжить только лидер"
     print("Тест 4 (top-p собирает ядро >= p): OK")
 
 

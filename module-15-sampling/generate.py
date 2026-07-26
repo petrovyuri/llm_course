@@ -21,7 +21,7 @@ model = SimpleLLM(
 ).to(device)
 
 # === Загружаем обученные веса ===
-# weights_only=True - безопасная загрузка: читаем только тензоры весов
+# weights_only=True - безопасная загрузка: читаем только веса, а не код весов
 model.load_state_dict(
     torch.load("best_model.pth", map_location=device, weights_only=True)
 )
