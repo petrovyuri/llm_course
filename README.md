@@ -1,8 +1,8 @@
-# Математика LLM — Создаем ChatGPT своими руками с нуля
+# Математика LLM — Создаём ChatGPT своими руками с нуля
 
-Учебный код к курсу [«Математика LLM — Создаем ChatGPT своими руками с нуля»](https://stepik.org/a/276236) на Stepik. Автор курса - Юрий Петров (Friflex).
+Учебный код к курсу [«Математика LLM — Создаём ChatGPT своими руками с нуля»](https://stepik.org/a/276236) на Stepik. Автор курса - Юрий Петров (Friflex).
 
-Здесь мы шаг за шагом собираем миниатюрную GPT-модель на PyTorch: от подготовки текста и токенизации до механизма внимания, трансформер-блока, обучения, генерации текста с управляемым сэмплированием и дообучения на парах «вопрос - ответ».
+Здесь мы шаг за шагом собираем миниатюрную GPT-модель на PyTorch: от подготовки текста и токенизации до механизма внимания, трансформер-блока, обучения, генерации текста с управляемым сэмплированием и дообучения на парах «вопрос - ответ». В финале открываем настоящие модели на Hugging Face и публикуем там свою.
 
 ## Как устроен репозиторий
 
@@ -23,13 +23,14 @@
 | [module-14-generation](module-14-generation/) | Авторегрессионная генерация текста | `generate.py` |
 | [module-15-sampling](module-15-sampling/) | Температура, top-k, top-p | `sampling.py` |
 | [module-16-finetuning](module-16-finetuning/) | Дообучение на парах «вопрос - ответ», чат с остановкой по EOS | `qa_data.py`, `qa_dataset.py`, `finetune.py`, `chat.py` |
+| [module-17-hugging-face](module-17-hugging-face/) | Настоящие модели с Hugging Face, `generate()`, chat template, квантизация, публикация своей модели | `compare_gpt2.py`, `hf_generate.py`, `hf_chat.py`, `quant_manual.py`, `publish.py` |
 
 ## Требования
 
 - Python 3.11
-- Зависимости из [requirements.txt](requirements.txt): `torch` 2.10 (CPU), `transformers` 5.3
+- Зависимости из [requirements.txt](requirements.txt): `torch` 2.10 (CPU), `transformers` 5.3, а для модуля 17 ещё `accelerate` и `optimum-quanto`
 
-При первом запуске `transformers` скачает токенизатор `gpt2` из интернета.
+При первом запуске `transformers` скачает токенизатор `gpt2` из интернета. В модуле 17 скачаются и сами модели, около 0,8 ГБ: GPT-2 и SmolLM2-135M-Instruct.
 
 ## Установка
 
@@ -69,7 +70,7 @@ python chat.py
 python -m pytest -q
 ```
 
-Команды `finetune.py` и `chat.py` есть только в модуле 16; в остальных модулях доступны те, что появились к их шагу курса.
+Команды `finetune.py` и `chat.py` появляются в модуле 16, а работа с чужими моделями, квантизация и публикация - в модуле 17; в остальных модулях доступны те, что появились к их шагу курса.
 
 > На Windows для корректного вывода символов вроде `×·Σ` задайте кодировку:
 > `set PYTHONIOENCODING=utf-8` (cmd) или `$env:PYTHONIOENCODING="utf-8"` (PowerShell).
@@ -84,4 +85,4 @@ for dir in module-*/; do
 done
 ```
 
-Те же тесты запускаются автоматически в GitHub Actions - см. [.github/workflows/tests.yml](.github/workflows/tests.yml).
+Тестам модуля 17 нужны обученные веса `chat_model.pth`, а при первом запуске ещё и интернет: они скачивают GPT-2 и SmolLM2. Как получить веса, написано в [README модуля](module-17-hugging-face/README.md).
