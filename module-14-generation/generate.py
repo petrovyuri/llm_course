@@ -34,11 +34,12 @@ def generate(model, tokenizer, prompt, max_new_tokens=20):
 
     for _ in range(max_new_tokens):
 
-        # Ограничиваем длину (если длиннее max_seq_length)
-        input_ids = input_ids[:, -settings.max_length:]
+        # Модель видит только последние max_length токенов,
+        # но полную последовательность мы сохраняем
+        context = input_ids[:, -settings.max_length:]
 
         with torch.no_grad():
-            logits = model(input_ids)
+            logits = model(context)
 
         # Берём логиты последнего токена
         last_logits = logits[:, -1, :]
