@@ -13,7 +13,7 @@ from sampling import filter_top_k, filter_top_p, sample_next_token
 sys.stdout.reconfigure(encoding="utf-8")
 
 # Логиты из ручного примера: ["кот", "любил", "сметану", "он", "был"]
-LOGITS = torch.tensor([[0.085, 0.201, 0.944, 0.334, -0.155]])
+LOGITS = torch.tensor([[0.085, 0.200, 0.944, 0.334, -0.154]])
 
 
 def test_greedy_equals_argmax():

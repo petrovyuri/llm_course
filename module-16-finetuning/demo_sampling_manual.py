@@ -4,7 +4,7 @@
 
 Словарь и логиты берём из ручного примера модуля 12:
 слова ["кот", "любил", "сметану", "он", "был"],
-logits = [0.085, 0.201, 0.944, 0.334, -0.155].
+logits = [0.085, 0.200, 0.944, 0.334, -0.154].
 """
 import sys
 import torch
@@ -15,7 +15,7 @@ from sampling import filter_top_k, filter_top_p
 sys.stdout.reconfigure(encoding="utf-8")
 
 WORDS = ["кот", "любил", "сметану", "он", "был"]
-logits = torch.tensor([[0.085, 0.201, 0.944, 0.334, -0.155]])
+logits = torch.tensor([[0.085, 0.200, 0.944, 0.334, -0.154]])
 
 
 def show(tag, probs):
